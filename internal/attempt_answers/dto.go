@@ -1,6 +1,8 @@
 package attemptanswers
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type SaveAnswerRequest struct {
 	AttemptID  string          `json:"attempt_id" validate:"required"`

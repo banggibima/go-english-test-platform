@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/banggibima/go-english-test-platform/internal/results"
+	"github.com/banggibima/go-english-test-platform/pkg/metrics"
 )
 
 type Service struct {
@@ -91,8 +92,24 @@ func (s *Service) HandleScoreAttempt(ctx context.Context, body []byte) error {
 	}
 
 	if err := s.resultRepository.Create(ctx, result); err != nil {
+		metrics.RabbitMQJobsFailedTotal.Inc()
 		return err
 	}
 
-	return s.jobRepository.CompleteAttempt(ctx, attempt.ID, score, maxScore, totalQuestions, answeredQuestions)
+	if err := s.jobRepository.CompleteAttempt(
+		ctx,
+		attempt.ID,
+		score,
+		maxScore,
+		totalQuestions,
+		answeredQuestions,
+	); err != nil {
+		metrics.RabbitMQJobsFailedTotal.Inc()
+		return err
+	}
+
+	metrics.ResultsGeneratedTotal.Inc()
+	metrics.RabbitMQJobsProcessedTotal.Inc()
+
+	return nil
 }

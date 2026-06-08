@@ -1,6 +1,8 @@
 package attemptanswers
 
-import "time"
+import (
+	"time"
+)
 
 type AttemptAnswer struct {
 	ID            string

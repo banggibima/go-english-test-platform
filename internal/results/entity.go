@@ -1,6 +1,8 @@
 package results
 
-import "time"
+import (
+	"time"
+)
 
 type Result struct {
 	ID         string

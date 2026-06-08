@@ -24,6 +24,7 @@ type Config struct {
 	MinIOAccessKey string
 	MinIOSecretKey string
 	MinIOBucket    string
+	MinIOUseSSL    bool
 
 	JWTSecret string
 }
@@ -49,6 +50,7 @@ func Load() *Config {
 		MinIOAccessKey: getEnv("MINIO_ACCESS_KEY", ""),
 		MinIOSecretKey: getEnv("MINIO_SECRET_KEY", ""),
 		MinIOBucket:    getEnv("MINIO_BUCKET", ""),
+		MinIOUseSSL:    getEnv("MINIO_USE_SSL", "false") == "true",
 
 		JWTSecret: getEnv("JWT_SECRET", "secret"),
 	}

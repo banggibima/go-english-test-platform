@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/banggibima/go-english-test-platform/internal/jobs"
+	"github.com/banggibima/go-english-test-platform/pkg/metrics"
 	"github.com/banggibima/go-english-test-platform/pkg/queue"
 )
 
@@ -31,6 +32,8 @@ func (s *Service) StartAttempt(ctx context.Context, userID string, req StartAtte
 	if err := s.repository.Create(ctx, attempt); err != nil {
 		return nil, err
 	}
+
+	metrics.AttemptsCreatedTotal.Inc()
 
 	response := toAttemptResponse(attempt)
 	return &response, nil
@@ -92,6 +95,8 @@ func (s *Service) Submit(ctx context.Context, id string, userID string) (*Attemp
 	if err := s.rabbit.Publish("score-attempt", body); err != nil {
 		return nil, err
 	}
+
+	metrics.AttemptsSubmittedTotal.Inc()
 
 	response := toAttemptResponse(attempt)
 	return &response, nil

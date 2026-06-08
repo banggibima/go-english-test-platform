@@ -1,6 +1,8 @@
 package attempts
 
-import "time"
+import (
+	"time"
+)
 
 type Attempt struct {
 	ID                string

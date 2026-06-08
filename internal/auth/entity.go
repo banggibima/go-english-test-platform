@@ -1,6 +1,8 @@
 package auth
 
-import "time"
+import (
+	"time"
+)
 
 type Role struct {
 	ID          string

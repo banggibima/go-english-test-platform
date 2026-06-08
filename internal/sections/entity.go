@@ -1,6 +1,8 @@
 package sections
 
-import "time"
+import (
+	"time"
+)
 
 type Section struct {
 	ID              string

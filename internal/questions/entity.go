@@ -1,6 +1,8 @@
 package questions
 
-import "time"
+import (
+	"time"
+)
 
 type Question struct {
 	ID            string

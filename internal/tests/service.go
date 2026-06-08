@@ -2,20 +2,36 @@ package tests
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type Service struct {
 	repository *Repository
+	cache      *redis.Client
 }
 
-func NewService(repository *Repository) *Service {
+func NewService(repository *Repository, cache *redis.Client) *Service {
 	return &Service{
 		repository: repository,
+		cache:      cache,
 	}
 }
 
 func (s *Service) FindAll(ctx context.Context) ([]TestResponse, error) {
+	key := "tests:list"
+
+	cached, err := s.cache.Get(ctx, key).Result()
+	if err == nil {
+		var result []TestResponse
+		if err := json.Unmarshal([]byte(cached), &result); err == nil {
+			return result, nil
+		}
+	}
+
 	items, err := s.repository.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -25,6 +41,9 @@ func (s *Service) FindAll(ctx context.Context) ([]TestResponse, error) {
 	for _, item := range items {
 		responses = append(responses, toTestResponse(&item))
 	}
+
+	bytes, _ := json.Marshal(responses)
+	_ = s.cache.Set(ctx, key, bytes, 5*time.Minute).Err()
 
 	return responses, nil
 }
@@ -57,6 +76,8 @@ func (s *Service) Create(ctx context.Context, userID string, req CreateTestReque
 		return nil, err
 	}
 
+	_ = s.cache.Del(ctx, "tests:list").Err()
+
 	response := toTestResponse(test)
 	return &response, nil
 }
@@ -75,6 +96,8 @@ func (s *Service) Update(ctx context.Context, id string, req UpdateTestRequest) 
 		return nil, err
 	}
 
+	_ = s.cache.Del(ctx, "tests:list").Err()
+
 	if updated == nil {
 		return nil, errors.New("test not found")
 	}
@@ -88,6 +111,8 @@ func (s *Service) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
+
+	_ = s.cache.Del(ctx, "tests:list").Err()
 
 	if test == nil {
 		return errors.New("test not found")

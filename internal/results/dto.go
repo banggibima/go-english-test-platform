@@ -1,6 +1,8 @@
 package results
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type ResultResponse struct {
 	ID         string          `json:"id"`

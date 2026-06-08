@@ -1,6 +1,8 @@
 package tests
 
-import "time"
+import (
+	"time"
+)
 
 type Test struct {
 	ID              string

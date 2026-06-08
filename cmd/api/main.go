@@ -7,6 +7,8 @@ import (
 	attemptanswers "github.com/banggibima/go-english-test-platform/internal/attempt_answers"
 	"github.com/banggibima/go-english-test-platform/internal/attempts"
 	"github.com/banggibima/go-english-test-platform/internal/auth"
+	"github.com/banggibima/go-english-test-platform/internal/dashboard"
+	"github.com/banggibima/go-english-test-platform/internal/files"
 	"github.com/banggibima/go-english-test-platform/internal/questions"
 	"github.com/banggibima/go-english-test-platform/internal/results"
 	"github.com/banggibima/go-english-test-platform/internal/roles"
@@ -16,9 +18,12 @@ import (
 	"github.com/banggibima/go-english-test-platform/pkg/cache"
 	"github.com/banggibima/go-english-test-platform/pkg/database"
 	"github.com/banggibima/go-english-test-platform/pkg/logger"
+	"github.com/banggibima/go-english-test-platform/pkg/metrics"
 	"github.com/banggibima/go-english-test-platform/pkg/middleware"
 	"github.com/banggibima/go-english-test-platform/pkg/queue"
+	"github.com/banggibima/go-english-test-platform/pkg/storage"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -29,6 +34,8 @@ func main() {
 	}
 
 	logg := logger.New()
+
+	metrics.Register()
 
 	pg, err := database.NewPostgres(cfg)
 	if err != nil {
@@ -52,6 +59,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	minioClient, err := storage.NewMinIO(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = minioClient
+
 	router := gin.New()
 
 	if err := router.SetTrustedProxies(nil); err != nil {
@@ -62,6 +76,7 @@ func main() {
 		gin.Recovery(),
 		middleware.CORS(),
 		middleware.Logger(logg),
+		middleware.Metrics(),
 	)
 
 	router.GET("/health", func(c *gin.Context) {
@@ -69,6 +84,8 @@ func main() {
 			"status": "ok",
 		})
 	})
+
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	authRepository := auth.NewRepository(pg)
 	authService := auth.NewService(authRepository, cfg)
@@ -80,7 +97,7 @@ func main() {
 	roleService := roles.NewService(roleRepository)
 	roleHandler := roles.NewHandler(roleService)
 	testRepository := tests.NewRepository(pg)
-	testService := tests.NewService(testRepository)
+	testService := tests.NewService(testRepository, rds)
 	testHandler := tests.NewHandler(testService)
 	sectionRepository := sections.NewRepository(pg)
 	sectionService := sections.NewService(sectionRepository)
@@ -97,6 +114,12 @@ func main() {
 	resultRepository := results.NewRepository(pg)
 	resultService := results.NewService(resultRepository)
 	resultHandler := results.NewHandler(resultService)
+	fileRepository := files.NewRepository(pg)
+	fileService := files.NewService(fileRepository, minioClient)
+	fileHandler := files.NewHandler(fileService)
+	dashboardRepository := dashboard.NewRepository(pg)
+	dashboardService := dashboard.NewService(dashboardRepository)
+	dashboardHandler := dashboard.NewHandler(dashboardService)
 
 	api := router.Group("/api")
 	auth.RegisterRoutes(api, authHandler)
@@ -108,10 +131,13 @@ func main() {
 	attempts.RegisterRoutes(api, attemptHandler, cfg.JWTSecret)
 	attemptanswers.RegisterRoutes(api, attemptAnswerHandler, cfg.JWTSecret)
 	results.RegisterRoutes(api, resultHandler, cfg.JWTSecret)
+	files.RegisterRoutes(api, fileHandler, cfg.JWTSecret)
+	dashboard.RegisterRoutes(api, dashboardHandler, cfg.JWTSecret)
 
 	logg.Info("postgres connected")
 	logg.Info("redis connected")
 	logg.Info("rabbitmq connected")
+	logg.Info("minio connected")
 	logg.Info("server started", "port", cfg.AppPort)
 
 	if err := router.Run(":" + cfg.AppPort); err != nil {
