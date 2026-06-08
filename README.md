@@ -1,35 +1,35 @@
-# Go English Test Platform
+# go-english-test-platform
 
-Backend platform for English proficiency testing built with Go, featuring asynchronous scoring, file storage, caching, and monitoring.
+backend platform for english proficiency testing built with go, featuring asynchronous scoring, file storage, caching, and monitoring.
 
-## Tech Stack
+## tech stack
 
-| Category           | Technologies                                          |
+| category           | technologies                                          |
 | ------------------ | ----------------------------------------------------- |
-| Backend            | Go, Gin                                               |
-| Database           | PostgreSQL                                            |
-| Cache              | Redis                                                 |
-| Messaging          | RabbitMQ                                              |
-| Object Storage     | MinIO                                                 |
-| Authentication     | JWT                                                   |
-| Database Migration | Goose                                                 |
-| Monitoring         | Prometheus, Grafana                                   |
-| Architecture       | Clean Architecture, Repository Pattern, Service Layer |
-| Processing         | Background Worker, Event-Driven Architecture          |
-| DevOps             | Docker, Docker Compose                                |
+| backend            | go, gin                                               |
+| database           | postgresql                                            |
+| cache              | redis                                                 |
+| messaging          | rabbitmq                                              |
+| object storage     | minio                                                 |
+| authentication     | jwt                                                   |
+| database migration | goose                                                 |
+| monitoring         | prometheus, grafana                                   |
+| architecture       | clean architecture, repository pattern, service layer |
+| processing         | background worker, event-driven architecture          |
+| devops             | docker, docker compose                                |
 
-## Features
+## features
 
-- Authentication & Authorization
-- Test Management
-- Section Management
-- Question Management
-- Test Attempts
-- Answer Submission
-- Asynchronous Scoring
-- Results & Analytics
-- File Upload Management
-- Dashboard Analytics
-- Redis Caching
-- Prometheus Metrics
-- Grafana Dashboards
+- authentication & authorization
+- test management
+- section management
+- question management
+- test attempts
+- answer submission
+- asynchronous scoring
+- results & analytics
+- file upload management
+- dashboard analytics
+- redis caching
+- prometheus metrics
+- grafana dashboards
