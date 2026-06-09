@@ -1,0 +1,16 @@
+basePath: /api
+host: localhost:8081
+info:
+  contact: {}
+  description: Backend API for English proficiency testing platform.
+  title: Go English Test Platform API
+  version: "1.0"
+paths: {}
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

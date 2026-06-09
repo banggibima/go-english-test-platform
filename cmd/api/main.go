@@ -3,6 +3,11 @@ package main
 import (
 	"log"
 
+	_ "github.com/banggibima/go-english-test-platform/docs"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
+
 	"github.com/banggibima/go-english-test-platform/config"
 	attemptanswers "github.com/banggibima/go-english-test-platform/internal/attempt_answers"
 	"github.com/banggibima/go-english-test-platform/internal/attempts"
@@ -26,6 +31,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// @title Go English Test Platform API
+// @version 1.0
+// @description Backend API for English proficiency testing platform.
+// @host localhost:8081
+// @BasePath /api
+// @schemes http
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg := config.Load()
 
@@ -86,6 +100,8 @@ func main() {
 	})
 
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	router.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 
 	authRepository := auth.NewRepository(pg)
 	authService := auth.NewService(authRepository, cfg)
