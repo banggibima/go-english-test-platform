@@ -15,6 +15,19 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
+// Upload godoc
+//
+// @Summary Upload file
+// @Description Upload file to MinIO and store metadata
+// @Tags Files
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "File"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /files/upload [post]
 func (h *Handler) Upload(c *gin.Context) {
 	userID := c.GetString("user_id")
 
@@ -33,6 +46,16 @@ func (h *Handler) Upload(c *gin.Context) {
 	response.Success(c, http.StatusCreated, "upload file success", result)
 }
 
+// FindMyFiles godoc
+//
+// @Summary Get my files
+// @Description Get uploaded files for current user
+// @Tags Files
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /files [get]
 func (h *Handler) FindMyFiles(c *gin.Context) {
 	userID := c.GetString("user_id")
 
@@ -45,6 +68,18 @@ func (h *Handler) FindMyFiles(c *gin.Context) {
 	response.Success(c, http.StatusOK, "get files success", result)
 }
 
+// FindByID godoc
+//
+// @Summary Get file by ID
+// @Description Get file metadata by ID
+// @Tags Files
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "File ID"
+// @Success 200 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Router /files/{id} [get]
 func (h *Handler) FindByID(c *gin.Context) {
 	id := c.Param("id")
 

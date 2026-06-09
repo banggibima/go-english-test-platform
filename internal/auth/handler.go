@@ -18,6 +18,17 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+// Register godoc
+//
+// @Summary Register user
+// @Description Create a new user account
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body RegisterRequest true "Register request"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /auth/register [post]
 func (h *Handler) Register(c *gin.Context) {
 	var req RegisterRequest
 
@@ -40,6 +51,18 @@ func (h *Handler) Register(c *gin.Context) {
 	response.Success(c, http.StatusCreated, "register success", result)
 }
 
+// Login godoc
+//
+// @Summary Login user
+// @Description Authenticate user and return access token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body LoginRequest true "Login request"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var req LoginRequest
 
@@ -62,6 +85,18 @@ func (h *Handler) Login(c *gin.Context) {
 	response.Success(c, http.StatusOK, "login success", result)
 }
 
+// RefreshToken godoc
+//
+// @Summary Refresh access token
+// @Description Generate a new access token using refresh token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body RefreshTokenRequest true "Refresh token request"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /auth/refresh [post]
 func (h *Handler) RefreshToken(c *gin.Context) {
 	var req RefreshTokenRequest
 

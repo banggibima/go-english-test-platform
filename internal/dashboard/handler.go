@@ -17,6 +17,16 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+// GetSummary godoc
+//
+// @Summary Get dashboard summary
+// @Description Get dashboard summary for current user
+// @Tags Dashboard
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /dashboard [get]
 func (h *Handler) GetSummary(c *gin.Context) {
 	userID := c.GetString("user_id")
 

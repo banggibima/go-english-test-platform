@@ -18,6 +18,19 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+// SaveOrUpdate godoc
+//
+// @Summary Save or update attempt answer
+// @Description Save or update answer for an attempt question
+// @Tags Attempt Answers
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body SaveAnswerRequest true "Save attempt answer request"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /attempt-answers [post]
 func (h *Handler) SaveOrUpdate(c *gin.Context) {
 	var req SaveAnswerRequest
 
@@ -40,6 +53,18 @@ func (h *Handler) SaveOrUpdate(c *gin.Context) {
 	response.Success(c, http.StatusOK, "save answer success", result)
 }
 
+// FindByAttemptID godoc
+//
+// @Summary Get answers by attempt ID
+// @Description Get all answers for an attempt
+// @Tags Attempt Answers
+// @Security BearerAuth
+// @Produce json
+// @Param attempt_id query string true "Attempt ID"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Router /attempt-answers [get]
 func (h *Handler) FindByAttemptID(c *gin.Context) {
 	attemptID := c.Query("attempt_id")
 

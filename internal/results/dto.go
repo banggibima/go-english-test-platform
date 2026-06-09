@@ -14,6 +14,6 @@ type ResultResponse struct {
 	Percentage float64         `json:"percentage"`
 	Status     string          `json:"status"`
 	Feedback   *string         `json:"feedback,omitempty"`
-	ResultData json.RawMessage `json:"result_data"`
+	ResultData json.RawMessage `json:"result_data" swaggertype:"object"`
 	GradedAt   *string         `json:"graded_at,omitempty"`
 }

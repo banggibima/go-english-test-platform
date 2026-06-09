@@ -1,11 +1,1194 @@
 basePath: /api
+definitions:
+  attemptanswers.SaveAnswerRequest:
+    properties:
+      answer_data:
+        type: object
+      answer_text:
+        type: string
+      attempt_id:
+        type: string
+      question_id:
+        type: string
+    required:
+    - attempt_id
+    - question_id
+    type: object
+  attempts.StartAttemptRequest:
+    properties:
+      test_id:
+        type: string
+    required:
+    - test_id
+    type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      full_name:
+        maxLength: 255
+        minLength: 3
+        type: string
+      password:
+        maxLength: 100
+        minLength: 8
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    type: object
+  questions.CreateQuestionRequest:
+    properties:
+      correct_answer:
+        type: string
+      display_order:
+        minimum: 1
+        type: integer
+      explanation:
+        type: string
+      points:
+        minimum: 1
+        type: integer
+      question_data:
+        type: object
+      question_text:
+        type: string
+      question_type:
+        type: string
+      section_id:
+        type: string
+    required:
+    - display_order
+    - question_text
+    - question_type
+    - section_id
+    type: object
+  questions.UpdateQuestionRequest:
+    properties:
+      correct_answer:
+        type: string
+      display_order:
+        minimum: 1
+        type: integer
+      explanation:
+        type: string
+      is_active:
+        type: boolean
+      points:
+        minimum: 1
+        type: integer
+      question_data:
+        type: object
+      question_text:
+        type: string
+    required:
+    - display_order
+    - question_text
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  sections.CreateSectionRequest:
+    properties:
+      display_order:
+        minimum: 1
+        type: integer
+      duration_minutes:
+        minimum: 1
+        type: integer
+      section_code:
+        maxLength: 50
+        minLength: 3
+        type: string
+      test_id:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - display_order
+    - duration_minutes
+    - section_code
+    - test_id
+    - title
+    type: object
+  sections.UpdateSectionRequest:
+    properties:
+      display_order:
+        minimum: 1
+        type: integer
+      duration_minutes:
+        minimum: 1
+        type: integer
+      is_active:
+        type: boolean
+      title:
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - display_order
+    - duration_minutes
+    - title
+    type: object
+  tests.CreateTestRequest:
+    properties:
+      description:
+        type: string
+      duration_minutes:
+        minimum: 1
+        type: integer
+      passing_score:
+        maximum: 100
+        minimum: 0
+        type: integer
+      test_code:
+        maxLength: 100
+        minLength: 3
+        type: string
+      title:
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - duration_minutes
+    - test_code
+    - title
+    type: object
+  tests.UpdateTestRequest:
+    properties:
+      description:
+        type: string
+      duration_minutes:
+        minimum: 1
+        type: integer
+      is_active:
+        type: boolean
+      passing_score:
+        maximum: 100
+        minimum: 0
+        type: integer
+      title:
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - duration_minutes
+    - title
+    type: object
 host: localhost:8081
 info:
   contact: {}
   description: Backend API for English proficiency testing platform.
   title: Go English Test Platform API
   version: "1.0"
-paths: {}
+paths:
+  /attempt-answers:
+    get:
+      description: Get all answers for an attempt
+      parameters:
+      - description: Attempt ID
+        in: query
+        name: attempt_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get answers by attempt ID
+      tags:
+      - Attempt Answers
+    post:
+      consumes:
+      - application/json
+      description: Save or update answer for an attempt question
+      parameters:
+      - description: Save attempt answer request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/attemptanswers.SaveAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Save or update attempt answer
+      tags:
+      - Attempt Answers
+  /attempts:
+    get:
+      description: Get all attempts for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my attempts
+      tags:
+      - Attempts
+    post:
+      consumes:
+      - application/json
+      description: Create a new test attempt
+      parameters:
+      - description: Start attempt request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/attempts.StartAttemptRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Start test attempt
+      tags:
+      - Attempts
+  /attempts/{id}:
+    get:
+      description: Get attempt detail by ID
+      parameters:
+      - description: Attempt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get attempt by ID
+      tags:
+      - Attempts
+  /attempts/{id}/submit:
+    post:
+      description: Submit attempt and publish scoring job to RabbitMQ
+      parameters:
+      - description: Attempt ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Submit attempt
+      tags:
+      - Attempts
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return access token
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Login user
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new access token using refresh token
+      parameters:
+      - description: Refresh token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Refresh access token
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Register user
+      tags:
+      - Auth
+  /dashboard:
+    get:
+      description: Get dashboard summary for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get dashboard summary
+      tags:
+      - Dashboard
+  /files:
+    get:
+      description: Get uploaded files for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my files
+      tags:
+      - Files
+  /files/{id}:
+    get:
+      description: Get file metadata by ID
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get file by ID
+      tags:
+      - Files
+  /files/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload file to MinIO and store metadata
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Upload file
+      tags:
+      - Files
+  /questions:
+    get:
+      description: Get list of questions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all questions
+      tags:
+      - Questions
+    post:
+      consumes:
+      - application/json
+      description: Create a new question
+      parameters:
+      - description: Create question request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/questions.CreateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create question
+      tags:
+      - Questions
+  /questions/{id}:
+    delete:
+      description: Delete question by ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete question
+      tags:
+      - Questions
+    get:
+      description: Get question detail by ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get question by ID
+      tags:
+      - Questions
+    put:
+      consumes:
+      - application/json
+      description: Update existing question
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update question request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/questions.UpdateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update question
+      tags:
+      - Questions
+  /questions/by-section:
+    get:
+      description: Get questions by section ID
+      parameters:
+      - description: Section ID
+        in: query
+        name: section_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get questions by section ID
+      tags:
+      - Questions
+  /results:
+    get:
+      description: Get all results for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my results
+      tags:
+      - Results
+  /results/{id}:
+    get:
+      description: Get result detail by ID
+      parameters:
+      - description: Result ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get result by ID
+      tags:
+      - Results
+  /results/by-attempt:
+    get:
+      description: Get result detail by attempt ID
+      parameters:
+      - description: Attempt ID
+        in: query
+        name: attempt_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get result by attempt ID
+      tags:
+      - Results
+  /roles:
+    get:
+      description: Get list of available roles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all roles
+      tags:
+      - Roles
+  /roles/{id}:
+    get:
+      description: Get role detail by ID
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get role by ID
+      tags:
+      - Roles
+  /sections:
+    get:
+      description: Get list of sections
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all sections
+      tags:
+      - Sections
+    post:
+      consumes:
+      - application/json
+      description: Create a new section
+      parameters:
+      - description: Create section request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/sections.CreateSectionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create section
+      tags:
+      - Sections
+  /sections/{id}:
+    delete:
+      description: Delete section by ID
+      parameters:
+      - description: Section ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete section
+      tags:
+      - Sections
+    get:
+      description: Get section detail by ID
+      parameters:
+      - description: Section ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get section by ID
+      tags:
+      - Sections
+    put:
+      consumes:
+      - application/json
+      description: Update existing section
+      parameters:
+      - description: Section ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update section request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/sections.UpdateSectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update section
+      tags:
+      - Sections
+  /sections/by-test:
+    get:
+      description: Get sections by test ID
+      parameters:
+      - description: Test ID
+        in: query
+        name: test_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get sections by test ID
+      tags:
+      - Sections
+  /tests:
+    get:
+      description: Get list of available tests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all tests
+      tags:
+      - Tests
+    post:
+      consumes:
+      - application/json
+      description: Create a new test
+      parameters:
+      - description: Create test request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/tests.CreateTestRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create test
+      tags:
+      - Tests
+  /tests/{id}:
+    delete:
+      description: Delete test by ID
+      parameters:
+      - description: Test ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete test
+      tags:
+      - Tests
+    get:
+      description: Get test detail by ID
+      parameters:
+      - description: Test ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get test by ID
+      tags:
+      - Tests
+    put:
+      consumes:
+      - application/json
+      description: Update existing test
+      parameters:
+      - description: Test ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update test request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/tests.UpdateTestRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update test
+      tags:
+      - Tests
 schemes:
 - http
 securityDefinitions:
