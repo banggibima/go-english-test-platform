@@ -12,12 +12,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type RepositoryInterface interface {
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetRoleByName(ctx context.Context, name string) (*Role, error)
+	CreateUser(ctx context.Context, user *User) error
+	UpdateLastLogin(ctx context.Context, userID string) error
+	CreateRefreshToken(ctx context.Context, token *RefreshToken) error
+	GetRefreshToken(ctx context.Context, token string) (*RefreshToken, error)
+	RevokeRefreshToken(ctx context.Context, token string) error
+	GetUserByID(ctx context.Context, id string) (*User, error)
+}
+
 type Service struct {
-	repository *Repository
+	repository RepositoryInterface
 	cfg        *config.Config
 }
 
-func NewService(repository *Repository, cfg *config.Config) *Service {
+func NewService(repository RepositoryInterface, cfg *config.Config) *Service {
 	return &Service{
 		repository: repository,
 		cfg:        cfg,

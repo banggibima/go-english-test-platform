@@ -84,7 +84,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/attemptanswers.SaveAnswerRequest"
+                            "$ref": "#/definitions/attempt_answers.SaveAnswerRequest"
                         }
                     }
                 ],
@@ -1551,7 +1551,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "attemptanswers.SaveAnswerRequest": {
+        "attempt_answers.SaveAnswerRequest": {
             "type": "object",
             "required": [
                 "attempt_id",

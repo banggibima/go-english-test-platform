@@ -134,7 +134,7 @@ func main() {
 	fileService := files.NewService(fileRepository, minioClient)
 	fileHandler := files.NewHandler(fileService)
 	dashboardRepository := dashboard.NewRepository(pg)
-	dashboardService := dashboard.NewService(dashboardRepository)
+	dashboardService := dashboard.NewService(dashboardRepository, rds)
 	dashboardHandler := dashboard.NewHandler(dashboardService)
 
 	api := router.Group("/api")

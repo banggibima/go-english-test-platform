@@ -8,15 +8,25 @@ import (
 
 	"github.com/banggibima/go-english-test-platform/internal/jobs"
 	"github.com/banggibima/go-english-test-platform/pkg/metrics"
-	"github.com/banggibima/go-english-test-platform/pkg/queue"
 )
 
-type Service struct {
-	repository *Repository
-	rabbit     *queue.RabbitMQ
+type RepositoryInterface interface {
+	Create(ctx context.Context, attempt *Attempt) error
+	FindAllByUserID(ctx context.Context, userID string) ([]Attempt, error)
+	FindByID(ctx context.Context, id string) (*Attempt, error)
+	Submit(ctx context.Context, id string, userID string) (*Attempt, error)
 }
 
-func NewService(repository *Repository, rabbit *queue.RabbitMQ) *Service {
+type QueueInterface interface {
+	Publish(queueName string, body []byte) error
+}
+
+type Service struct {
+	repository RepositoryInterface
+	rabbit     QueueInterface
+}
+
+func NewService(repository RepositoryInterface, rabbit QueueInterface) *Service {
 	return &Service{
 		repository: repository,
 		rabbit:     rabbit,

@@ -1,4 +1,4 @@
-package attemptanswers
+package attempt_answers
 
 import (
 	"time"

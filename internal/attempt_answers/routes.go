@@ -1,4 +1,4 @@
-package attemptanswers
+package attempt_answers
 
 import (
 	"github.com/banggibima/go-english-test-platform/pkg/middleware"

@@ -1,6 +1,6 @@
 basePath: /api
 definitions:
-  attemptanswers.SaveAnswerRequest:
+  attempt_answers.SaveAnswerRequest:
     properties:
       answer_data:
         type: object
@@ -248,7 +248,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/attemptanswers.SaveAnswerRequest'
+          $ref: '#/definitions/attempt_answers.SaveAnswerRequest'
       produces:
       - application/json
       responses:
